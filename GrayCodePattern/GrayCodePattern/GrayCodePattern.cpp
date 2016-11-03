@@ -309,6 +309,7 @@ int GrayCodePattern::executeDecode()
 		// Show the result
 		resize(cm_disp, cm_disp, Size(640, 480));
 		imshow("cm disparity m", cm_disp);
+		imwrite("cv_disparity_m.png", cm_disp);
 		// Compute the point cloud
 		Mat pointcloud;
 		disparityMap.convertTo(disparityMap, CV_32FC1);
@@ -318,6 +319,7 @@ int GrayCodePattern::executeDecode()
 		threshold(scaledDisparityMap, thresholded_disp, 0, 255, THRESH_OTSU + THRESH_BINARY);
 		resize(thresholded_disp, dst, Size(640, 480));
 		imshow("threshold disp otsu", dst);
+		imwrite("threshold_disp_otsu.png", cm_disp);
 #ifdef HAVE_OPENCV_VIZ
 		// Apply the mask to the point cloud
 		Mat pointcloud_tresh, color_tresh;
