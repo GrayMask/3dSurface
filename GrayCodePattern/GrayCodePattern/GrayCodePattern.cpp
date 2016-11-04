@@ -319,7 +319,7 @@ int GrayCodePattern::executeDecode()
 		threshold(scaledDisparityMap, thresholded_disp, 0, 255, THRESH_OTSU + THRESH_BINARY);
 		resize(thresholded_disp, dst, Size(640, 480));
 		imshow("threshold disp otsu", dst);
-		imwrite("threshold_disp_otsu.png", cm_disp);
+		imwrite("threshold_disp_otsu.png", dst);
 #ifdef HAVE_OPENCV_VIZ
 		// Apply the mask to the point cloud
 		Mat pointcloud_tresh, color_tresh;
