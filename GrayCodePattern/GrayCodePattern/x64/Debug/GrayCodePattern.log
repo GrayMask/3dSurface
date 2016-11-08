@@ -1,8 +1,8 @@
 ﻿  GrayCodePattern.cpp
-d:\application programs\opencv\opencv\config\install\include\opencv2\core\mat.hpp(1965): warning C4819: The file contains a character that cannot be represented in the current code page (932). Save the file in Unicode format to prevent data loss
-d:\application programs\opencv\opencv\config\install\include\opencv2\core\persistence.hpp : warning C4819: The file contains a character that cannot be represented in the current code page (932). Save the file in Unicode format to prevent data loss
-d:\application programs\opencv\opencv\config\install\include\opencv2\core\utility.hpp : warning C4819: The file contains a character that cannot be represented in the current code page (932). Save the file in Unicode format to prevent data loss
-d:\application programs\opencv\opencv\config\install\include\opencv2\core\utility.hpp : warning C4819: The file contains a character that cannot be represented in the current code page (932). Save the file in Unicode format to prevent data loss
+d:\application programs\opencv\opencv\config2\install\include\opencv2\core\mat.hpp(1965): warning C4819: The file contains a character that cannot be represented in the current code page (932). Save the file in Unicode format to prevent data loss
+d:\application programs\opencv\opencv\config2\install\include\opencv2\core\persistence.hpp : warning C4819: The file contains a character that cannot be represented in the current code page (932). Save the file in Unicode format to prevent data loss
+d:\application programs\opencv\opencv\config2\install\include\opencv2\core\utility.hpp : warning C4819: The file contains a character that cannot be represented in the current code page (932). Save the file in Unicode format to prevent data loss
+d:\application programs\opencv\opencv\config2\install\include\opencv2\core\utility.hpp : warning C4819: The file contains a character that cannot be represented in the current code page (932). Save the file in Unicode format to prevent data loss
 d:\application programs\opencv\opencv\config\install\include\opencv2\structured_light\structured_light.hpp : warning C4819: The file contains a character that cannot be represented in the current code page (932). Save the file in Unicode format to prevent data loss
 d:\document\project\3dsurface\code\graycodepattern\graycodepattern\const.h(1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
   GrayCodePattern.vcxproj -> D:\document\project\3dSurface\code\GrayCodePattern\x64\Debug\GrayCodePattern.exe

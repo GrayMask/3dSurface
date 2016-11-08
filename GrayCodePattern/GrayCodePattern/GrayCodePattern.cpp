@@ -201,17 +201,16 @@ int GrayCodePattern::executeDecode()
 	//}
 	// Set up GraycodePattern with params
 	Ptr<structured_light::GrayCodePattern> graycode = structured_light::GrayCodePattern::create(params);
-	size_t white_thresh = 0;
-	size_t black_thresh = 0;
 	/*
 	if( argc == 7 )
 	{
 	// If passed, setting the white and black threshold, otherwise using default values
 	white_thresh = parser.get<unsigned>( 4 );
 	black_thresh = parser.get<unsigned>( 5 );
+	*/
 	graycode->setWhiteThreshold( white_thresh );
 	graycode->setBlackThreshold( black_thresh );
-	}*/
+	/*}*/
 	vector<string> imagelist;
 	bool ok = readStringList(imagesName_file, imagelist);
 	if (!ok || imagelist.empty())
@@ -318,13 +317,17 @@ int GrayCodePattern::executeDecode()
 		Mat dst, thresholded_disp;
 		threshold(scaledDisparityMap, thresholded_disp, 0, 255, THRESH_OTSU + THRESH_BINARY);
 		resize(thresholded_disp, dst, Size(640, 480));
-		imshow("threshold disp otsu", dst);
-		imwrite("threshold_disp_otsu.png", dst);
+		imshow("threshold disp otsu", scaledDisparityMap);
+		imwrite("threshold_disp_otsu.png", scaledDisparityMap);
 #ifdef HAVE_OPENCV_VIZ
 		// Apply the mask to the point cloud
 		Mat pointcloud_tresh, color_tresh;
-		pointcloud.copyTo(pointcloud_tresh, thresholded_disp);
-		color.copyTo(color_tresh, thresholded_disp);
+		pointcloud.copyTo(pointcloud_tresh);
+		color.copyTo(color_tresh);
+		minMaxIdx(color_tresh, &min, &max);
+		cout << "color_tresh min " << min << endl << "disp max " << max << endl;
+		minMaxIdx(pointcloud_tresh, &min, &max);
+		cout << "pointcloud_tresh min " << min << endl << "disp max " << max << endl;
 		// Show the point cloud on viz
 		viz::Viz3d myWindow("Point cloud with color");
 		myWindow.setBackgroundMeshLab();
