@@ -1,4 +1,4 @@
-#include <opencv2/imgproc.hpp>
+﻿#include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/structured_light.hpp>
 #include <opencv2/core.hpp>
@@ -14,6 +14,9 @@
 #endif
 using namespace cv;
 using namespace std;
+
+#define cvQueryHistValue_1D( hist, idx0 ) \
+    ((float)cvGetReal1D( (hist)->bins, (idx0)))
 static void getGrayCodeImagesHelp()
 {
 	cout << "\nThis example shows how to use the \"Structured Light module\" to acquire a graycode pattern"
@@ -60,7 +63,7 @@ void GrayCodePattern::getGrayCodeImages()
 	moveWindow("Pattern Window", params.width + 316, -20);
 	setWindowProperty("Pattern Window", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
 	// Open camera number 1, using libgphoto2
-	VideoCapture cap1(0);
+	VideoCapture cap1(1);
 	if (!cap1.isOpened())
 	{
 		// check if cam1 opened
@@ -69,7 +72,7 @@ void GrayCodePattern::getGrayCodeImages()
 		exit(-1);
 	}
 	// Open camera number 2
-	VideoCapture cap2(1);
+	VideoCapture cap2(0);
 	if (!cap2.isOpened())
 	{
 		// check if cam2 opened
@@ -187,6 +190,39 @@ static bool readStringList(const string& filename, vector<string>& l)
 	}
 	return true;
 }
+
+static void myCalcHist(Mat gray_plane)
+{
+	IplImage *src;
+	src = &IplImage(gray_plane);
+	int hist_size = 256;
+	int hist_height = 256;
+	float range[] = { 0,255 };
+	float* ranges[] = { range };
+	CvHistogram* gray_hist = cvCreateHist(1, &hist_size, CV_HIST_ARRAY, ranges, 1);
+	cvCalcHist(&src, gray_hist, 0, 0);
+	cvNormalizeHist(gray_hist, 1.0);
+
+	int scale = 2;
+	IplImage* hist_image = cvCreateImage(cvSize(hist_size*scale, hist_height), 8, 3);
+	cvZero(hist_image);
+	float max_value = 0;
+	cvGetMinMaxHistValue(gray_hist, 0, &max_value, 0, 0);
+
+	for (int i = 0; i<hist_size; i++)
+	{
+		float bin_val = cvQueryHistValue_1D(gray_hist, i);
+		int intensity = cvRound(bin_val*hist_height / max_value); 
+		cvRectangle(hist_image,
+			cvPoint(i*scale, hist_height - 1),
+			cvPoint((i + 1)*scale - 1, hist_height - intensity),
+			CV_RGB(255, 255, 255));
+	}
+	cvGetMinMaxHistValue(gray_hist, 0, &max_value, 0, 0);
+	cvNamedWindow("H-S Histogram", 1);
+	cvShowImage("H-S Histogram", hist_image);
+}
+
 int GrayCodePattern::executeDecode()
 {
 	structured_light::GrayCodePattern::Params params;
@@ -303,7 +339,8 @@ int GrayCodePattern::executeDecode()
 		minMaxIdx(disparityMap, &min, &max);
 		Mat cm_disp, scaledDisparityMap;
 		cout << "disp min " << min << endl << "disp max " << max << endl;
-		convertScaleAbs(disparityMap, scaledDisparityMap, 255 / (max - min));
+		convertScaleAbs(disparityMap, scaledDisparityMap, 255 / (max - min), -min*255 / (max - min));
+		myCalcHist(scaledDisparityMap);
 		applyColorMap(scaledDisparityMap, cm_disp, COLORMAP_JET);
 		// Show the result
 		resize(cm_disp, cm_disp, Size(640, 480));
@@ -312,7 +349,7 @@ int GrayCodePattern::executeDecode()
 		// Compute the point cloud
 		Mat pointcloud;
 		disparityMap.convertTo(disparityMap, CV_32FC1);
-		reprojectImageTo3D(disparityMap, pointcloud, Q, true, -1);
+		reprojectImageTo3D(disparityMap, pointcloud, Q, false, -1);
 		// Compute a mask to remove background
 		Mat dst, thresholded_disp;
 		threshold(scaledDisparityMap, thresholded_disp, 0, 255, THRESH_OTSU + THRESH_BINARY);
@@ -322,8 +359,8 @@ int GrayCodePattern::executeDecode()
 #ifdef HAVE_OPENCV_VIZ
 		// Apply the mask to the point cloud
 		Mat pointcloud_tresh, color_tresh;
-		pointcloud.copyTo(pointcloud_tresh);
-		color.copyTo(color_tresh);
+		pointcloud.copyTo(pointcloud_tresh, thresholded_disp);
+		color.copyTo(color_tresh, thresholded_disp);
 		minMaxIdx(color_tresh, &min, &max);
 		cout << "color_tresh min " << min << endl << "disp max " << max << endl;
 		minMaxIdx(pointcloud_tresh, &min, &max);
