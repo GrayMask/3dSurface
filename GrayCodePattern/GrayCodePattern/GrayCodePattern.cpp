@@ -226,27 +226,12 @@ static void myCalcHist(Mat gray_plane)
 int GrayCodePattern::executeDecode()
 {
 	structured_light::GrayCodePattern::Params params;
-	//CommandLineParser parser( argc, argv, keys );
-	//String images_file = images_dir;
 	params.width = proj_width;
 	params.height = proj_height;
-	//if( images_file.empty() || calib_file.empty() || params.width < 1 || params.height < 1 || argc < 5 || argc > 7 )
-	//{
-	//  help();
-	//  return -1;
-	//}
 	// Set up GraycodePattern with params
 	Ptr<structured_light::GrayCodePattern> graycode = structured_light::GrayCodePattern::create(params);
-	/*
-	if( argc == 7 )
-	{
-	// If passed, setting the white and black threshold, otherwise using default values
-	white_thresh = parser.get<unsigned>( 4 );
-	black_thresh = parser.get<unsigned>( 5 );
-	*/
 	graycode->setWhiteThreshold( white_thresh );
 	graycode->setBlackThreshold( black_thresh );
-	/*}*/
 	vector<string> imagelist;
 	bool ok = readStringList(imagesName_file, imagelist);
 	if (!ok || imagelist.empty())
@@ -326,6 +311,8 @@ int GrayCodePattern::executeDecode()
 	//remap(whiteImages[1], whiteImages[1], map1x, map1y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
 	//remap(blackImages[0], blackImages[0], map2x, map2y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
 	//remap(blackImages[1], blackImages[1], map1x, map1y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
+	//imshow("whiteImages", whiteImages[0]);
+	//waitKey();
 	cout << endl << "Decoding pattern ..." << endl;
 	Mat disparityMap;
 	bool decoded = graycode->decode(captured_pattern, disparityMap, blackImages, whiteImages,
