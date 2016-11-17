@@ -9,9 +9,9 @@
 #include "GrayCodePattern.h"
 #include "Const.h"
 // (if you did not build the opencv_viz module, you will only see the disparity images)
-#ifdef HAVE_OPENCV_VIZ
+
 #include <opencv2/viz.hpp>
-#endif
+
 using namespace cv;
 using namespace std;
 
@@ -343,7 +343,7 @@ int GrayCodePattern::executeDecode()
 		resize(thresholded_disp, dst, Size(640, 480));
 		imshow("threshold disp otsu", scaledDisparityMap);
 		imwrite("threshold_disp_otsu.png", scaledDisparityMap);
-#ifdef HAVE_OPENCV_VIZ
+
 		// Apply the mask to the point cloud
 		Mat pointcloud_tresh, color_tresh;
 		pointcloud.copyTo(pointcloud_tresh, thresholded_disp);
@@ -359,7 +359,7 @@ int GrayCodePattern::executeDecode()
 		myWindow.showWidget("pointcloud", viz::WCloud(pointcloud_tresh, color_tresh));
 		myWindow.showWidget("text2d", viz::WText("Point cloud", Point(20, 20), 20, viz::Color::green()));
 		myWindow.spin();
-#endif // HAVE_OPENCV_VIZ
+
 	}
 	waitKey();
 	return 0;
