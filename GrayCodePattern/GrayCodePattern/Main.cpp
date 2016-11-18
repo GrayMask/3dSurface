@@ -2,6 +2,6 @@
 
 int main(int argh, char* argv[])
 {
-	GrayCodePattern::getGrayCodeImages();
+	//GrayCodePattern::getGrayCodeImages();
 	GrayCodePattern::executeDecode();
 }
