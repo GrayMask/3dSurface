@@ -1,0 +1,13 @@
+width  = 321; % 这个地方你要指定为你自己的矩阵的宽度
+height = 481; % 这里也要指定为你自己的矩阵的高度
+channels = 3; % 通道数
+fs = fopen('orgIm_8UC3.dat', 'rb');
+db = fread(fs, 'uint8'); % 注意，这里用的是unsigned int8
+fclose(fs);
+
+ou = reshape(db, channels*height, width); % 调整显示格式
+
+im(:,:,1) = ou(3:3:end, :)'; % R通道
+im(:,:,2) = ou(2:3:end, :)'; % G通道
+im(:,:,3) = ou(1:3:end, :)'; % B通道
+figure; imshow(uint8(im)) % 一定要记得转换为uint8

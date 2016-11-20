@@ -1,5 +1,7 @@
 ﻿#include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
+#include <iostream>
+#include <fstream>
 #include <opencv2/structured_light.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/calib3d.hpp>
@@ -32,6 +34,24 @@ static void decodeHelp()
 		"./example_structured_light_pointcloud <images_list> <calib_param_path> <proj_width> <proj_height> <white_thresh> <black_thresh>\n"
 		<< endl;
 }
+
+int abWrite(const Mat &im, const string &fname)
+{
+	ofstream ouF;
+	ouF.open(fname.c_str(), std::ofstream::binary);
+	if (!ouF)
+	{
+		cerr << "failed to open the file : " << fname << endl;
+		return 0;
+	}
+	for (int r = 0; r < im.rows; r++)
+	{
+		ouF.write(reinterpret_cast<const char*>(im.ptr(r)), im.cols*im.elemSize());
+	}
+	ouF.close();
+	return 1;
+}
+
 void GrayCodePattern::getGrayCodeImages()
 {
 	structured_light::GrayCodePattern::Params params;
@@ -223,6 +243,35 @@ static void myCalcHist(Mat gray_plane)
 	cvShowImage("H-S Histogram", hist_image);
 }
 
+ bool sort_by_value(const uchar& obj1, const uchar& obj2)
+ {
+	return obj1 < obj2;
+ }
+
+static int optimizeDisparityMap(const Mat disparityMap, Mat& result)
+{
+	// Find the mid value
+	int invalid = 0;// the invalid value
+	float portion = 0.4;
+	int length = disparityMap.rows * disparityMap.cols;
+	vector<uchar> array(disparityMap.data, disparityMap.data + length);
+	sort(array.begin(), array.end(), sort_by_value);
+	int numOfInvalid = count(array.begin(), array.end(), invalid);
+	int positionOfInvalid = distance(array.begin(), find(array.begin(), array.end(), invalid));
+	int numOfValid = length - numOfInvalid;
+	int halfOfNumOfValid = (numOfValid - 1) / 2;
+	int midIndex = halfOfNumOfValid < positionOfInvalid ? halfOfNumOfValid : halfOfNumOfValid + numOfInvalid + 1;
+	uchar mid_value = array[midIndex];
+	uchar max_value = array[length - 1];
+	uchar upThresh = mid_value + (max_value - mid_value)*portion;
+	uchar downThresh = mid_value - (max_value - mid_value)*portion;
+
+	// Use threshold to filter the disparityMap
+	threshold(disparityMap, result, upThresh, max_value, THRESH_TOZERO_INV);
+	threshold(result, result, downThresh, max_value, THRESH_TOZERO);
+	return downThresh;
+}
+
 int GrayCodePattern::executeDecode()
 {
 	structured_light::GrayCodePattern::Params params;
@@ -317,6 +366,8 @@ int GrayCodePattern::executeDecode()
 	Mat disparityMap;
 	bool decoded = graycode->decode(captured_pattern, disparityMap, blackImages, whiteImages,
 		structured_light::DECODE_3D_UNDERWORLD);
+	disparityMap.convertTo(disparityMap, CV_32F);
+	int downThresh = optimizeDisparityMap(disparityMap, disparityMap);
 	if (decoded)
 	{
 		cout << endl << "pattern decoded" << endl;
@@ -328,7 +379,8 @@ int GrayCodePattern::executeDecode()
 		cout << "disp min " << min << endl << "disp max " << max << endl;
 		convertScaleAbs(disparityMap, scaledDisparityMap, 255 / (max - min), -min*255 / (max - min));
 		myCalcHist(scaledDisparityMap);
-		applyColorMap(scaledDisparityMap, cm_disp, COLORMAP_JET);
+		abWrite(scaledDisparityMap, "disparityMap.txt");
+		applyColorMap(scaledDisparityMap, cm_disp, COLORMAP_RAINBOW);
 		// Show the result
 		resize(cm_disp, cm_disp, Size(640, 480));
 		imshow("cm disparity m", cm_disp);
