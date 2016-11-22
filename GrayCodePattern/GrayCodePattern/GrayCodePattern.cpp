@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include "GrayCodePattern.h"
 #include "Const.h"
+#include "Path.h"
 // (if you did not build the opencv_viz module, you will only see the disparity images)
 
 #include <opencv2/viz.hpp>
@@ -379,7 +380,9 @@ int GrayCodePattern::executeDecode()
 		cout << "disp min " << min << endl << "disp max " << max << endl;
 		convertScaleAbs(disparityMap, scaledDisparityMap, 255 / (max - min), -min*255 / (max - min));
 		myCalcHist(scaledDisparityMap);
-		abWrite(scaledDisparityMap, "disparityMap.txt");
+
+		abWrite(scaledDisparityMap, disparityMap_file);
+
 		applyColorMap(scaledDisparityMap, cm_disp, COLORMAP_RAINBOW);
 		// Show the result
 		resize(cm_disp, cm_disp, Size(640, 480));
