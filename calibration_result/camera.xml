@@ -16,18 +16,18 @@
     8.5426297926686334e+02 2.4068985305601865e+02 0. 0. 1.</data></cam2_intrinsics>
 <cam1_distorsion type_id="opencv-matrix">
   <rows>1</rows>
-  <cols>14</cols>
+  <cols>5</cols>
   <dt>d</dt>
   <data>
-    -6.8957871150433850e-02 3.1587163567330765e+00 0. 0. 0. 0. 0.
-    2.3454750426501182e+01 0. 0. 0. 0. 0. 0.</data></cam1_distorsion>
+    -1.4691585205322504e-02 1.8793855281389744e-06
+    -1.8457152860933516e-03 2.0133841687689943e-02 0.</data></cam1_distorsion>
 <cam2_distorsion type_id="opencv-matrix">
   <rows>1</rows>
-  <cols>14</cols>
+  <cols>5</cols>
   <dt>d</dt>
   <data>
-    1.1024475698973776e-01 -2.3016213429248555e+00 0. 0. 0. 0. 0.
-    -1.2890743550021062e+01 0. 0. 0. 0. 0. 0.</data></cam2_distorsion>
+    -2.8274829561887203e-03 -9.6153946233857422e-06
+    -4.0855400124916010e-05 4.4832311034412745e-03 0.</data></cam2_distorsion>
 <R type_id="opencv-matrix">
   <rows>3</rows>
   <cols>3</cols>

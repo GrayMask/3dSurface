@@ -56,16 +56,8 @@ int abWrite(const Mat &im, const string &fname)
 void GrayCodePattern::getGrayCodeImages()
 {
 	structured_light::GrayCodePattern::Params params;
-	//CommandLineParser parser(argc, argv, keys);
-	//String path = parser.get<String>(0);
 	params.width = proj_width;
 	params.height = proj_height;
-	//if (path.empty() || params.width < 1 || params.height < 1)
-	//{
-	//	help();
-	//	return -1;
-	//}
-	// Set up GraycodePattern with params
 	Ptr<structured_light::GrayCodePattern> graycode = structured_light::GrayCodePattern::create(params);
 	// Storage for pattern
 	vector<Mat> pattern;
@@ -84,7 +76,7 @@ void GrayCodePattern::getGrayCodeImages()
 	moveWindow("Pattern Window", params.width + 316, -20);
 	setWindowProperty("Pattern Window", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
 	// Open camera number 1, using libgphoto2
-	VideoCapture cap1(1);
+	VideoCapture cap1(2);
 	if (!cap1.isOpened())
 	{
 		// check if cam1 opened
@@ -93,7 +85,7 @@ void GrayCodePattern::getGrayCodeImages()
 		exit(-1);
 	}
 	// Open camera number 2
-	VideoCapture cap2(0);
+	VideoCapture cap2(1);
 	if (!cap2.isOpened())
 	{
 		// check if cam2 opened
@@ -253,7 +245,6 @@ static int optimizeDisparityMap(const Mat disparityMap, Mat& result)
 {
 	// Find the mid value
 	int invalid = 0;// the invalid value
-	float portion = 0.3;
 	int length = disparityMap.rows * disparityMap.cols;
 	vector<uchar> array(disparityMap.data, disparityMap.data + length);
 	sort(array.begin(), array.end(), sort_by_value);
@@ -265,7 +256,7 @@ static int optimizeDisparityMap(const Mat disparityMap, Mat& result)
 	uchar mid_value = array[midIndex];
 	uchar max_value = array[length - 1];
 	uchar upThresh = mid_value + (max_value - mid_value)*portion;
-	uchar downThresh = mid_value - (max_value - mid_value)*portion*0.2;
+	uchar downThresh = mid_value - (max_value - mid_value)*portion;
 
 	// Use threshold to filter the disparityMap
 	threshold(disparityMap, result, upThresh, max_value, THRESH_TOZERO_INV);
@@ -280,14 +271,16 @@ int GrayCodePattern::executeDecode()
 	params.height = proj_height;
 	// Set up GraycodePattern with params
 	Ptr<structured_light::GrayCodePattern> graycode = structured_light::GrayCodePattern::create(params);
-	graycode->setWhiteThreshold( white_thresh );
-	graycode->setBlackThreshold( black_thresh );
+	if (isThresh) {
+		graycode->setWhiteThreshold(white_thresh);
+		graycode->setBlackThreshold(black_thresh);
+	}
 	vector<string> imagelist;
 	bool ok = readStringList(imagesName_file, imagelist);
 	if (!ok || imagelist.empty())
 	{
 		cout << "can not open " << imagesName_file << " or the string list is empty" << endl;
-		decodeHelp();
+		decodeHelp(); 
 		return -1;
 	}
 	FileStorage fs(calib_file, FileStorage::READ);
@@ -343,8 +336,10 @@ int GrayCodePattern::executeDecode()
 			decodeHelp();
 			return -1;
 		}
-		//remap(captured_pattern[1][i], captured_pattern[1][i], map1x, map1y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
-		//remap(captured_pattern[0][i], captured_pattern[0][i], map2x, map2y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
+		if (isRemap) {
+			remap(captured_pattern[1][i], captured_pattern[1][i], map1x, map1y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
+			remap(captured_pattern[0][i], captured_pattern[0][i], map2x, map2y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
+		}
 	}
 	cout << "done" << endl;
 	vector<Mat> blackImages;
@@ -356,19 +351,23 @@ int GrayCodePattern::executeDecode()
 	whiteImages[1] = imread(imagelist[2 * numberOfPatternImages + 2], IMREAD_GRAYSCALE);
 	blackImages[0] = imread(imagelist[numberOfPatternImages + 1], IMREAD_GRAYSCALE);
 	blackImages[1] = imread(imagelist[2 * numberOfPatternImages + 2 + 1], IMREAD_GRAYSCALE);
-	//remap(color, color, map2x, map2y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
-	//remap(whiteImages[0], whiteImages[0], map2x, map2y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
-	//remap(whiteImages[1], whiteImages[1], map1x, map1y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
-	//remap(blackImages[0], blackImages[0], map2x, map2y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
-	//remap(blackImages[1], blackImages[1], map1x, map1y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
-	//imshow("whiteImages", whiteImages[0]);
-	//waitKey();
+	if (isRemap) {
+		remap(color, color, map2x, map2y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
+		remap(whiteImages[0], whiteImages[0], map2x, map2y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
+		remap(whiteImages[1], whiteImages[1], map1x, map1y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
+		remap(blackImages[0], blackImages[0], map2x, map2y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
+		remap(blackImages[1], blackImages[1], map1x, map1y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
+		imshow("whiteImages", whiteImages[0]);
+		waitKey();
+	}
 	cout << endl << "Decoding pattern ..." << endl;
 	Mat disparityMap;
 	bool decoded = graycode->decode(captured_pattern, disparityMap, blackImages, whiteImages,
 		structured_light::DECODE_3D_UNDERWORLD);
 	disparityMap.convertTo(disparityMap, CV_32F);
-	int downThresh = optimizeDisparityMap(disparityMap, disparityMap);
+	if (isOptimize) {
+		int downThresh = optimizeDisparityMap(disparityMap, disparityMap);
+	}
 	if (decoded)
 	{
 		cout << endl << "pattern decoded" << endl;
