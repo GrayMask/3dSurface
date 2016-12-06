@@ -103,14 +103,14 @@ void GrayCodePattern::getGrayCodeImages()
 		imshow("Pattern Window", pattern[i]);
 		Mat frame1;
 		Mat frame2;
-		while (1)//柍尷儖乕僾
+		while (1)
 		{
 			cap1 >> frame1;  // get a new frame from camera 1
 			cap2 >> frame2;  // get a new frame from camera 2
 			imshow("cam1", frame1);
 			imshow("cam2", frame2);
 			int key = waitKey(1);
-			if (key == 115)//s偑墴偝傟偨偲偒
+			if (key == 115)
 			{
 				bool save1 = false;
 				bool save2 = false;
@@ -130,64 +130,6 @@ void GrayCodePattern::getGrayCodeImages()
 				}
 			}
 		}
-		//cap1 >> frame1;  // get a new frame from camera 1
-		//cap2 >> frame2;  // get a new frame from camera 2
-		//if ((frame1.data) && (frame2.data))
-		//{
-		//	Mat tmp;
-		//	cout << "cam 1 size: " << Size((int)cap1.get(CAP_PROP_FRAME_WIDTH), (int)cap1.get(CAP_PROP_FRAME_HEIGHT))
-		//		<< endl;
-		//	cout << "cam 2 size: " << Size((int)cap2.get(CAP_PROP_FRAME_WIDTH), (int)cap2.get(CAP_PROP_FRAME_HEIGHT))
-		//		<< endl;
-		//	cout << "zoom cam 1: " << cap1.get(CAP_PROP_ZOOM) << endl << "zoom cam 2: " << cap2.get(CAP_PROP_ZOOM)
-		//		<< endl;
-		//	cout << "focus cam 1: " << cap1.get(CAP_PROP_FOCUS) << endl << "focus cam 2: " << cap2.get(CAP_PROP_FOCUS)
-		//		<< endl;
-		//	cout << "Press enter to save the photo or an other key to re-acquire the photo" << endl;
-		//	namedWindow("cam1", WINDOW_NORMAL);
-		//	resizeWindow("cam1", 640, 480);
-		//	namedWindow("cam2", WINDOW_NORMAL);
-		//	resizeWindow("cam2", 640, 480);
-		//	// Moving window of cam2 to see the image at the same time with cam1
-		//	moveWindow("cam2", 640 + 75, 0);
-		//	// Resizing images to avoid issues for high resolution images, visualizing them as grayscale
-		//	resize(frame1, tmp, Size(640, 480));
-		//	cvtColor(tmp, tmp, COLOR_RGB2GRAY);
-		//	imshow("cam1", tmp);
-		//	resize(frame2, tmp, Size(640, 480));
-		//	cvtColor(tmp, tmp, COLOR_RGB2GRAY);
-		//	imshow("cam2", tmp);
-		//	bool save1 = false;
-		//	bool save2 = false;
-		//	int key = waitKey(0);
-		//	// Pressing enter, it saves the output
-		//	if (key == 13)
-		//	{
-		//		ostringstream name;
-		//		name << i + 1;
-		//		save1 = imwrite(images_dir + "pattern_cam1_im" + name.str() + ".png", frame1);
-		//		save2 = imwrite(images_dir + "pattern_cam2_im" + name.str() + ".png", frame2);
-		//		if ((save1) && (save2))
-		//		{
-		//			cout << "pattern cam1 and cam2 images number " << i + 1 << " saved" << endl << endl;
-		//			i++;
-		//		}
-		//		else
-		//		{
-		//			cout << "pattern cam1 and cam2 images number " << i + 1 << " NOT saved" << endl << endl << "Retry, check the path" << endl << endl;
-		//		}
-		//	}
-		//	// Pressing escape, the program closes
-
-		//	if (key == 27)
-		//	{
-		//		cout << "Closing program" << endl;
-		//	}
-		//}
-		//else
-		//{
-		//	cout << "No frame data, waiting for new frame" << endl;
-		//}
 	}
 	// the camera will be deinitialized automatically in VideoCapture destructor
 }
@@ -384,8 +326,8 @@ int GrayCodePattern::executeDecode()
 		remap(whiteImages[1], whiteImages[1], map1x, map1y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
 		remap(blackImages[0], blackImages[0], map2x, map2y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
 		remap(blackImages[1], blackImages[1], map1x, map1y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
-		imshow("whiteImages", whiteImages[0]);
-		waitKey();
+		//imshow("whiteImages", whiteImages[0]);
+		//waitKey();
 	}
 	cout << endl << "Decoding pattern ..." << endl;
 	Mat disparityMap;
