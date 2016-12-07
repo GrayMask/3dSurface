@@ -2,7 +2,7 @@ function showDisparityMap( )
 width  = 640; % Õâ¸öµØ·½ÄãÒªÖ¸¶¨ÎªÄã×Ô¼ºµÄ¾ØÕóµÄ¿úÒÈ
 height = 480; % ÕâÀE²ÒªÖ¸¶¨ÎªÄã×Ô¼ºµÄ¾ØÕóµÄ¸ß¶È
 channels = 1; % Í¨µÀÊ?
-fs = fopen('disparityMap3.txt', 'rb');
+fs = fopen('disparityMap1.txt', 'rb');
 db = fread(fs, 'uint8'); % ×¢Òâ£¬ÕâÀEÃµÄÊÇunsigned int8
 fclose(fs);
 

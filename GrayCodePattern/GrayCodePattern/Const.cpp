@@ -10,5 +10,6 @@ extern const size_t black_thresh = 1;
 extern const bool isRemap = true;
 
 // Optimize disparity map
-extern const bool isOptimize = false;
-extern const float portion = 1;
+extern const bool isOptimize = true;
+extern const float downPortion = 0.09;
+extern const float upPortion = 0.98;

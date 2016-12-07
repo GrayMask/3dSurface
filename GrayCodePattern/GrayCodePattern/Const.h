@@ -9,4 +9,5 @@ extern const bool isRemap;
 
 // Optimize disparity map
 extern const bool isOptimize;
-extern const float portion;
+extern const float downPortion;
+extern const float upPortion;

@@ -216,16 +216,19 @@ static int optimizeDisparityMap(const Mat disparityMap, Mat& result)
 	int invalid = 0;// the invalid value
 	int length = disparityMap.rows * disparityMap.cols;
 	vector<uchar> array(disparityMap.data, disparityMap.data + length);
+	vector<uchar>::iterator it;
+	for (it = array.begin(); it != array.end();)
+	{
+		if (*it == invalid)
+			it = array.erase(it);
+		else
+			++it;
+	}
 	sort(array.begin(), array.end(), sort_by_value);
-	int numOfInvalid = count(array.begin(), array.end(), invalid);
-	int positionOfInvalid = distance(array.begin(), find(array.begin(), array.end(), invalid));
-	int numOfValid = length - numOfInvalid;
-	int halfOfNumOfValid = (numOfValid - 1) / 2;
-	int midIndex = halfOfNumOfValid < positionOfInvalid ? halfOfNumOfValid : halfOfNumOfValid + numOfInvalid + 1;
-	uchar mid_value = array[midIndex];
-	uchar max_value = array[length - 1];
-	uchar upThresh = mid_value + (max_value - mid_value)*portion;
-	uchar downThresh = mid_value - (max_value - mid_value)*portion;
+	float numOfValid = array.size();
+	uchar max_value = array[numOfValid - 1];
+	uchar upThresh = array[numOfValid * upPortion];
+	uchar downThresh = array[numOfValid * downPortion];
 
 	// Use threshold to filter the disparityMap
 	threshold(disparityMap, result, upThresh, max_value, THRESH_TOZERO_INV);
