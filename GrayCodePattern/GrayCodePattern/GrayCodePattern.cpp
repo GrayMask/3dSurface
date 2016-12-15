@@ -329,8 +329,6 @@ int GrayCodePattern::executeDecode()
 		remap(whiteImages[1], whiteImages[1], map1x, map1y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
 		remap(blackImages[0], blackImages[0], map2x, map2y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
 		remap(blackImages[1], blackImages[1], map1x, map1y, INTER_NEAREST, BORDER_CONSTANT, Scalar());
-		//imshow("whiteImages", whiteImages[0]);
-		//waitKey();
 	}
 	cout << endl << "Decoding pattern ..." << endl;
 	Mat disparityMap;
